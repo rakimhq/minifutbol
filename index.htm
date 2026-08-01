@@ -307,10 +307,7 @@
                         <span>Məsləhət:</span>
                     </div>
                     <p class="leading-relaxed">
-                        • Oyunçuların yerini dəyişmək üçün meydançadakı fişləri <b>bir-birinin üzərinə sürükləyib buraxın</b>.
-                    </p>
-                    <p class="leading-relaxed">
-                        • Mobil cihazlarda fişin üzərinə toxunub seçin, sonra dəyişmək istədiyiniz digər oyunçuya toxunun.
+                        Yerlərini dəyişmək istədiyiniz oyunçulara sxemdə ardıcıl toxunun.
                     </p>
                 </div>
             </div>
@@ -596,8 +593,9 @@
             document.getElementById('badge-teamB-name').innerText = state.B.name;
 
             if (isTeamBActive) {
-                boardTitle.innerText = `${state.A.name} vs ${state.B.name}`;
+                boardTitle.classList.add('hidden');
             } else {
+                boardTitle.classList.remove('hidden');
                 boardTitle.innerText = `${state.A.name} Taktiki Kadrosu`;
             }
 
