@@ -1,662 +1,970 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Komanda Sxemi</title>
-<style>
-  :root{
-    --pitch-green:#2e8b57;
-    --pitch-green-dark:#256e46;
-    --line:#ffffff;
-    --dark:#16321f;
-    --gold:#f4c542;
-  }
-  *{box-sizing:border-box;}
-  body{
-    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
-    background:#f2f4f2;
-    margin:0;
-    padding:24px 16px 60px;
-    color:#1c2b22;
-  }
-  h1{
-    text-align:center;
-    color:var(--dark);
-    margin-bottom:4px;
-  }
-  .subtitle{
-    text-align:center;
-    color:#5b6b60;
-    margin-bottom:28px;
-    font-size:14px;
-  }
-  .team-block{
-    max-width:760px;
-    margin:0 auto 28px;
-    background:#fff;
-    border-radius:14px;
-    box-shadow:0 4px 16px rgba(0,0,0,.08);
-    padding:20px 22px;
-  }
-  .team-block h2{
-    margin-top:0;
-    color:var(--dark);
-    border-bottom:2px solid #eef1ee;
-    padding-bottom:10px;
-  }
-  .name-inputs{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px 16px;
-    margin-bottom:16px;
-  }
-  .name-field{
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .name-field label{
-    width:26px;
-    font-weight:700;
-    color:#557;
-    flex-shrink:0;
-    font-size:13px;
-  }
-  .name-field input[type="text"]{
-    flex:1;
-    padding:8px 10px;
-    border:1px solid #d3d8d4;
-    border-radius:8px;
-    font-size:14px;
-  }
-  .num-input{
-    width:52px !important;
-    flex:none !important;
-    text-align:center;
-  }
-  .toggle-row{
-    margin:10px 0 18px;
-    font-size:14px;
-  }
-  .formation-choice{
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-    margin-bottom:18px;
-  }
-  .formation-card{
-    border:2px solid #e2e6e2;
-    border-radius:10px;
-    padding:10px 12px 6px;
-    cursor:pointer;
-    text-align:center;
-    width:120px;
-    transition:.15s;
-  }
-  .formation-card.checked{
-    border-color:var(--pitch-green);
-    background:#eef8f1;
-  }
-  .formation-card input{display:none;}
-  .formation-card .fc-title{
-    font-weight:700;
-    font-size:14px;
-    margin-bottom:6px;
-  }
-  .mini-preview{
-    position:relative;
-    width:100%;
-    height:110px;
-    background:var(--pitch-green);
-    border-radius:6px;
-    border:1px solid #fff;
-    overflow:hidden;
-  }
-  .mini-dot{
-    position:absolute;
-    width:9px;height:9px;
-    background:#fff;
-    border-radius:50%;
-    transform:translate(-50%,-50%);
-    border:1px solid #23543a;
-  }
-  button.primary{
-    background:var(--pitch-green);
-    color:#fff;
-    border:none;
-    padding:10px 18px;
-    border-radius:8px;
-    font-size:14px;
-    font-weight:600;
-    cursor:pointer;
-  }
-  button.primary:hover{background:var(--pitch-green-dark);}
-  button.secondary{
-    background:#eef1ee;
-    color:#33413a;
-    border:none;
-    padding:10px 16px;
-    border-radius:8px;
-    font-size:14px;
-    cursor:pointer;
-    margin-right:8px;
-  }
-  button.secondary:hover{background:#e0e5e0;}
-  .pitch-panel{
-    text-align:center;
-  }
-  .pitch-wrap{
-    display:inline-block;
-    padding:14px;
-    background:#dff2e6;
-    border-radius:12px;
-  }
-  .pitch{
-    position:relative;
-    width:320px;
-    height:480px;
-    background:var(--pitch-green);
-    border:3px solid var(--line);
-    border-radius:8px;
-    margin:0 auto;
-  }
-  .pitch .stripe{
-    position:absolute;
-    left:0;right:0;
-    height:12.5%;
-  }
-  .pitch .line-halfway{
-    position:absolute;
-    top:50%; left:0; right:0; height:2px;
-    background:var(--line);
-  }
-  .pitch .circle-center{
-    position:absolute;
-    top:50%; left:50%;
-    width:70px;height:70px;
-    border:2px solid var(--line);
-    border-radius:50%;
-    transform:translate(-50%,-50%);
-  }
-  .pitch .dot-center{
-    position:absolute; top:50%;left:50%;
-    width:5px;height:5px;background:var(--line);
-    border-radius:50%; transform:translate(-50%,-50%);
-  }
-  .pitch .box-bottom{
-    position:absolute; bottom:0; left:50%;
-    width:170px; height:64px;
-    border:2px solid var(--line);
-    border-bottom:none;
-    transform:translateX(-50%);
-  }
-  .pitch .box-top{
-    position:absolute; top:0; left:50%;
-    width:170px; height:64px;
-    border:2px solid var(--line);
-    border-top:none;
-    transform:translateX(-50%);
-  }
-  .pitch .arc-bottom{
-    position:absolute; bottom:60px; left:50%;
-    width:60px;height:30px;
-    border:2px solid var(--line);
-    border-top:none;
-    border-radius:0 0 60px 60px;
-    transform:translateX(-50%) rotate(180deg);
-  }
-  .tokens-layer{
-    position:absolute; top:0;left:0;right:0;bottom:0;
-  }
-  .player-token{
-    position:absolute;
-    width:66px;
-    transform:translate(-50%,-50%);
-    text-align:center;
-    cursor:grab;
-    user-select:none;
-    z-index:2;
-  }
-  .player-token .num-circle{
-    width:32px;height:32px;
-    border-radius:50%;
-    background:#fff;
-    color:#16321f;
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;
-    font-size:13px;
-    margin:0 auto 3px;
-    border:2px solid #16321f;
-    box-shadow:0 1px 3px rgba(0,0,0,.3);
-  }
-  .player-token .pname{
-    font-size:10.5px;
-    font-weight:600;
-    color:#fff;
-    background:rgba(0,0,0,.55);
-    border-radius:5px;
-    padding:1px 5px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    max-width:86px;
-    margin:0 auto;
-  }
-  .player-token.selected .num-circle{
-    outline:3px solid var(--gold);
-  }
-  .pitch-actions{
-    margin-top:14px;
-  }
-  .add-b-section{
-    max-width:760px;
-    margin:0 auto 28px;
-    text-align:center;
-  }
-  #matchView{
-    display:none;
-    max-width:900px;
-    margin:0 auto 30px;
-    justify-content:center;
-    gap:24px;
-    flex-wrap:wrap;
-  }
-  #matchViewWrap{
-    display:flex;
-    gap:24px;
-    justify-content:center;
-    background:#123c26;
-    padding:20px;
-    border-radius:14px;
-    flex-wrap:wrap;
-  }
-  .match-pitch h3{
-    text-align:center;
-    color:#fff;
-    margin:0 0 8px;
-  }
-  .match-pitch .pitch{
-    width:250px;
-    height:380px;
-  }
-  .match-actions{
-    text-align:center;
-    margin-top:16px;
-  }
-  .hint{
-    font-size:12.5px;
-    color:#6f7c74;
-    text-align:center;
-    margin-top:10px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halı Saha İntaktiv Sxem Qurucu</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            user-select: none;
+        }
+
+        /* Grass pitch texture with alternating stripes */
+        .football-pitch {
+            background: linear-gradient(to right, 
+                #1e5d28 0%, #1e5d28 10%, 
+                #184e21 10%, #184e21 20%,
+                #1e5d28 20%, #1e5d28 30%, 
+                #184e21 30%, #184e21 40%,
+                #1e5d28 40%, #1e5d28 50%,
+                #184e21 50%, #184e21 60%,
+                #1e5d28 60%, #1e5d28 70%,
+                #184e21 70%, #184e21 80%,
+                #1e5d28 80%, #1e5d28 90%,
+                #184e21 90%, #184e21 100%
+            );
+            position: relative;
+            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.6), 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 4px solid rgba(255, 255, 255, 0.85);
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+        }
+
+        @media (max-width: 768px) {
+            .football-pitch {
+                aspect-ratio: 4 / 3;
+            }
+        }
+
+        /* White field markings */
+        .pitch-line {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            pointer-events: none;
+        }
+
+        .center-line {
+            top: 0; bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            border-left: 2px solid rgba(255, 255, 255, 0.85);
+        }
+
+        .center-circle {
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 130px; height: 130px;
+            border-radius: 50%;
+        }
+
+        .center-spot {
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px; height: 8px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+        }
+
+        /* Goal boxes */
+        .penalty-area-left { top: 20%; bottom: 20%; left: 0; width: 18%; border-left: none; }
+        .penalty-area-right { top: 20%; bottom: 20%; right: 0; width: 18%; border-right: none; }
+        .goal-box-left { top: 35%; bottom: 35%; left: 0; width: 8%; border-left: none; }
+        .goal-box-right { top: 35%; bottom: 35%; right: 0; width: 8%; border-right: none; }
+
+        /* Half pitch boundary overlay */
+        .half-pitch-divider {
+            position: absolute; top: 0; bottom: 0; right: 0; width: 50%;
+            background: rgba(0, 0, 0, 0.25);
+            display: flex; align-items: center; justify-content: center;
+            border-left: 2px dashed rgba(255, 255, 255, 0.3);
+            z-index: 30;
+        }
+
+        /* Player token style */
+        .player-token {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+            z-index: 20;
+            touch-action: none;
+            pointer-events: auto;
+        }
+
+        .player-token:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.15);
+            z-index: 50;
+        }
+
+        .player-token.dragging {
+            opacity: 0.8;
+            transform: translate(-50%, -50%) scale(1.2);
+            z-index: 100;
+        }
+
+        .player-token.drag-over {
+            transform: translate(-50%, -50%) scale(1.25) !important;
+        }
+
+        .player-token.selected-for-swap {
+            animation: pulse-border 1.2s infinite alternate;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0px rgba(234, 179, 8, 0.8); }
+            100% { box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
+        }
+
+        /* Formation Mini-Previews (From File 1 logic) */
+        .formation-card {
+            border: 2px solid #334155;
+            transition: all 0.2s ease;
+        }
+        .formation-card.active {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        .mini-preview {
+            position: relative;
+            width: 100%; 
+            aspect-ratio: 1 / 1;
+            background-color: #1e5d28;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.3);
+            overflow: hidden;
+        }
+        .mini-dot {
+            position: absolute;
+            width: 6px; height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between antialiased">
 
-<h1>Komanda Sxemi Qurucusu</h1>
-<p class="subtitle">Oyunçuların adlarını daxil edin, taktikanı seçin və sxemi qurun. Yerlərini dəyişmək üçün oyunçunu sürüyün (və ya iki oyunçuya ardıcıl toxunun).</p>
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-900/40">
+                    <i class="fa-solid font-bold text-xl fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                        Komanda <span class="text-emerald-400">Sxemi Qurucu</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">6v6 Taktiki Kadro & İnteraktiv İdarəetmə</p>
+                </div>
+            </div>
 
-<!-- TEAM A -->
-<div class="team-block" id="teamA">
-  <h2>A Komandası</h2>
-  <div class="setup-panel" id="setupA">
-    <div class="name-inputs" id="namesA"></div>
-    <div class="toggle-row">
-      <label><input type="checkbox" id="numToggleA" onchange="renderNumberInputs('A')"> Forma nömrələrini əlavə et</label>
-    </div>
-    <div class="formation-choice" id="formationChoiceA"></div>
-    <button class="primary" onclick="buildPitch('A')">Sxemi qur</button>
-  </div>
-  <div class="pitch-panel" id="pitchPanelA" style="display:none">
-    <div class="pitch-wrap" id="pitchWrapA">
-      <div class="pitch" id="pitchA">
-        <div class="line-halfway"></div>
-        <div class="circle-center"></div>
-        <div class="dot-center"></div>
-        <div class="box-bottom"></div>
-        <div class="box-top"></div>
-        <div class="tokens-layer" id="tokensA"></div>
-      </div>
-    </div>
-    <div class="pitch-actions">
-      <button class="secondary" onclick="editSetup('A')">Redaktə et</button>
-      <button class="primary" onclick="downloadPNG('A')">Şəkil yaddaşa ver (PNG)</button>
-    </div>
-    <p class="hint">Yerini dəyişmək üçün oyunçunu sürüyüb digərinin üzərinə buraxın.</p>
-  </div>
-</div>
+            <!-- Global Action Controls -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <button id="mode-toggle-btn" onclick="toggleTeamB()" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
+                    <i class="fa-solid fa-users-viewfinder text-emerald-400"></i>
+                    <span id="mode-toggle-text">Rəqib (B) Əlavə Et</span>
+                </button>
+                <button onclick="fillPresetData()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition-all">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                    <span>Nümunə Doldur</span>
+                </button>
+                <button onclick="exportAsImage()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-md shadow-emerald-900/30">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Şəkil (PNG)</span>
+                </button>
+            </div>
+        </div>
+    </header>
 
-<!-- ADD TEAM B TRIGGER -->
-<div class="add-b-section" id="addBSection" style="display:none">
-  <button class="secondary" onclick="showTeamB()">+ Rəqib (B) komandasının sxemini əlavə et</button>
-</div>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-<!-- TEAM B -->
-<div class="team-block" id="teamB" style="display:none">
-  <h2>B Komandası (Rəqib)</h2>
-  <div class="setup-panel" id="setupB">
-    <div class="name-inputs" id="namesB"></div>
-    <div class="toggle-row">
-      <label><input type="checkbox" id="numToggleB" onchange="renderNumberInputs('B')"> Forma nömrələrini əlavə et</label>
-    </div>
-    <div class="formation-choice" id="formationChoiceB"></div>
-    <button class="primary" onclick="buildPitch('B')">Sxemi qur</button>
-  </div>
-  <div class="pitch-panel" id="pitchPanelB" style="display:none">
-    <div class="pitch-wrap" id="pitchWrapB">
-      <div class="pitch" id="pitchB">
-        <div class="line-halfway"></div>
-        <div class="circle-center"></div>
-        <div class="dot-center"></div>
-        <div class="box-bottom"></div>
-        <div class="box-top"></div>
-        <div class="tokens-layer" id="tokensB"></div>
-      </div>
-    </div>
-    <div class="pitch-actions">
-      <button class="secondary" onclick="editSetup('B')">Redaktə et</button>
-      <button class="primary" onclick="downloadPNG('B')">Şəkil yaddaşa ver (PNG)</button>
-    </div>
-    <p class="hint">Yerini dəyişmək üçün oyunçunu sürüyüb digərinin üzərinə buraxın.</p>
-  </div>
-</div>
+            <div class="lg:col-span-4 space-y-5">
+                
+                <!-- TEAM A FORM BOX -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                    
+                    <div class="flex items-center justify-between mb-4 pl-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                            <h2 class="text-base font-bold text-white tracking-wide uppercase">A Komandası</h2>
+                        </div>
+                        <input type="color" id="teamA-color" value="#059669" onchange="syncInputsToData()" title="Forma Rəngi Seç" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0 p-0">
+                    </div>
 
-<!-- COMBINED MATCH VIEW -->
-<div id="matchView">
-  <div id="matchViewWrap">
-    <div class="match-pitch">
-      <h3>Komanda A</h3>
-      <div class="pitch" id="matchPitchA">
-        <div class="line-halfway"></div>
-        <div class="circle-center"></div>
-        <div class="box-bottom"></div>
-        <div class="box-top"></div>
-      </div>
-    </div>
-    <div class="match-pitch">
-      <h3>Komanda B</h3>
-      <div class="pitch" id="matchPitchB">
-        <div class="line-halfway"></div>
-        <div class="circle-center"></div>
-        <div class="box-bottom"></div>
-        <div class="box-top"></div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="match-actions" id="matchActions" style="display:none">
-  <button class="primary" onclick="downloadCombined()">Hər iki sxemi birlikdə yaddaşa ver</button>
-</div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Komanda Adı</label>
+                        <input type="text" id="teamA-name" value="A Komandası" oninput="syncInputsToData()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm font-semibold text-slate-100 focus:outline-none focus:border-emerald-500">
+                    </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-  // ---------- Formation definitions ----------
-  // order: 1=GK, then defence group, then midfield group, then forward group
-  const formationSlots = {
-    '2-2-1': [
-      {x:50,y:88},
-      {x:28,y:66},{x:72,y:66},
-      {x:28,y:40},{x:72,y:40},
-      {x:50,y:15}
-    ],
-    '2-1-2': [
-      {x:50,y:88},
-      {x:28,y:66},{x:72,y:66},
-      {x:50,y:46},
-      {x:28,y:20},{x:72,y:20}
-    ],
-    '3-1-1': [
-      {x:50,y:88},
-      {x:18,y:66},{x:50,y:70},{x:82,y:66},
-      {x:50,y:44},
-      {x:50,y:16}
-    ]
-  };
-  const formationLabels = {
-    '2-2-1':'2-2-1',
-    '2-1-2':'2-1-2',
-    '3-1-1':'3-1-1'
-  };
+                    <!-- FORMATION CARDS (Feature adapted from File 1) -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-400 mb-2">Taktiki Sxem Seçimi</label>
+                        <div class="grid grid-cols-3 gap-2" id="teamA-formations-container">
+                            <!-- JS fills this -->
+                        </div>
+                    </div>
 
-  const state = { A:null, B:null };
-  let selected = null;
+                    <!-- TOGGLE NUMBERS (Feature from File 1) -->
+                    <div class="flex items-center gap-2 mb-3 px-1">
+                        <input type="checkbox" id="numToggleA" checked onchange="toggleNumbers('A')" class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900">
+                        <label for="numToggleA" class="text-xs font-medium text-slate-300 cursor-pointer">Forma nömrələrini göstər</label>
+                    </div>
 
-  function escapeHtml(str){
-    return str.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
+                    <div id="teamA-players-container" class="space-y-2">
+                        <!-- JS fills this -->
+                    </div>
+                </div>
 
-  // ---------- Build name inputs ----------
-  function renderNameInputs(team){
-    const container = document.getElementById(`names${team}`);
-    container.innerHTML = '';
-    for(let i=1;i<=6;i++){
-      const wrap = document.createElement('div');
-      wrap.className='name-field';
-      const label = document.createElement('label');
-      label.textContent = i===1 ? 'Qapı' : i;
-      const input = document.createElement('input');
-      input.type='text';
-      input.id = `name${team}${i}`;
-      input.placeholder = i===1 ? 'Qapıçının adı' : `${i}-ci oyunçu`;
-      wrap.appendChild(label);
-      wrap.appendChild(input);
-      container.appendChild(wrap);
-    }
-  }
+                <!-- TEAM B FORM BOX (Hidden by default) -->
+                <div id="teamB-panel" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden hidden">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                    
+                    <div class="flex items-center justify-between mb-4 pl-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                            <h2 class="text-base font-bold text-white tracking-wide uppercase">B Komandası</h2>
+                        </div>
+                        <input type="color" id="teamB-color" value="#dc2626" onchange="syncInputsToData()" title="Forma Rəngi Seç" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0 p-0">
+                    </div>
 
-  function renderNumberInputs(team){
-    const checked = document.getElementById(`numToggle${team}`).checked;
-    for(let i=1;i<=6;i++){
-      const wrap = document.getElementById(`name${team}${i}`).parentElement;
-      let numInput = wrap.querySelector('.num-input');
-      if(checked && !numInput){
-        numInput = document.createElement('input');
-        numInput.type='text';
-        numInput.className='num-input';
-        numInput.id = `num${team}${i}`;
-        numInput.placeholder='№';
-        numInput.maxLength = 2;
-        wrap.appendChild(numInput);
-      } else if(!checked && numInput){
-        numInput.remove();
-      }
-    }
-  }
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Komanda Adı</label>
+                        <input type="text" id="teamB-name" value="B Komandası" oninput="syncInputsToData()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm font-semibold text-slate-100 focus:outline-none focus:border-red-500">
+                    </div>
 
-  // ---------- Formation choice cards with mini preview ----------
-  function renderFormationChoice(team){
-    const container = document.getElementById(`formationChoice${team}`);
-    container.innerHTML='';
-    Object.keys(formationSlots).forEach((key, idx)=>{
-      const card = document.createElement('label');
-      card.className='formation-card';
-      card.id = `card${team}-${key}`;
-      card.innerHTML = `
-        <input type="radio" name="formation${team}" value="${key}" ${idx===0?'checked':''} onchange="onFormationPick('${team}','${key}')">
-        <div class="fc-title">${formationLabels[key]}</div>
-        <div class="mini-preview" id="preview${team}-${key}"></div>
-      `;
-      container.appendChild(card);
-      drawMiniPreview(`preview${team}-${key}`, key);
-      if(idx===0) card.classList.add('checked');
-    });
-  }
+                    <!-- FORMATION CARDS -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-400 mb-2">Taktiki Sxem Seçimi</label>
+                        <div class="grid grid-cols-3 gap-2" id="teamB-formations-container">
+                            <!-- JS fills this -->
+                        </div>
+                    </div>
 
-  function onFormationPick(team,key){
-    document.querySelectorAll(`#formationChoice${team} .formation-card`).forEach(c=>c.classList.remove('checked'));
-    document.getElementById(`card${team}-${key}`).classList.add('checked');
-  }
+                    <div class="flex items-center gap-2 mb-3 px-1">
+                        <input type="checkbox" id="numToggleB" checked onchange="toggleNumbers('B')" class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-red-500 focus:ring-red-500 focus:ring-offset-slate-900">
+                        <label for="numToggleB" class="text-xs font-medium text-slate-300 cursor-pointer">Forma nömrələrini göstər</label>
+                    </div>
 
-  function drawMiniPreview(containerId, key){
-    const box = document.getElementById(containerId);
-    box.innerHTML='';
-    formationSlots[key].forEach(pos=>{
-      const dot = document.createElement('div');
-      dot.className='mini-dot';
-      dot.style.left = pos.x+'%';
-      dot.style.top = pos.y+'%';
-      box.appendChild(dot);
-    });
-  }
+                    <div id="teamB-players-container" class="space-y-2">
+                        <!-- JS fills this -->
+                    </div>
+                </div>
 
-  // ---------- Build pitch from form ----------
-  function buildPitch(team){
-    const formationInput = document.querySelector(`input[name="formation${team}"]:checked`);
-    if(!formationInput){
-      alert('Zəhmət olmasa taktika seçin.');
-      return;
-    }
-    const fKey = formationInput.value;
-    const slotsDef = formationSlots[fKey];
-    const numOn = document.getElementById(`numToggle${team}`).checked;
+                <!-- Info Help Card -->
+                <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400 space-y-2">
+                    <div class="flex items-center gap-2 font-bold text-amber-400">
+                        <i class="fa-solid fa-lightbulb text-sm"></i>
+                        <span>Məsləhət:</span>
+                    </div>
+                    <p class="leading-relaxed">
+                        • Oyunçuların yerini dəyişmək üçün meydançadakı fişləri <b>bir-birinin üzərinə sürükləyib buraxın</b>.
+                    </p>
+                    <p class="leading-relaxed">
+                        • Mobil cihazlarda fişin üzərinə toxunub seçin, sonra dəyişmək istədiyiniz digər oyunçuya toxunun.
+                    </p>
+                </div>
+            </div>
 
-    const slots = slotsDef.map((pos,i)=>{
-      const nameInput = document.getElementById(`name${team}${i+1}`);
-      const name = (nameInput.value.trim()) || (i===0 ? 'Qapıçı' : `Oyunçu ${i+1}`);
-      let number = '';
-      if(numOn){
-        const numInput = document.getElementById(`num${team}${i+1}`);
-        if(numInput) number = numInput.value.trim();
-      }
-      return {x:pos.x, y:pos.y, name, number};
-    });
+            <div class="lg:col-span-8 space-y-4">
+                
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
+                    <div id="export-container" class="bg-slate-950 p-4 rounded-xl border border-slate-800/60 space-y-4">
+                        
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div class="flex items-center gap-3">
+                                <span class="px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800/60 rounded-md text-xs font-extrabold uppercase tracking-widest">
+                                    <i class="fa-solid fa-football me-1"></i> Sxem
+                                </span>
+                                <h3 id="pitch-board-title" class="text-sm font-bold text-slate-200">
+                                    A Komandası Kadrosu
+                                </h3>
+                            </div>
+                            <div id="pitch-matchup-badge" class="text-xs font-bold text-slate-400 hidden">
+                                <span id="badge-teamA-name" class="text-emerald-400">A Komandası</span> 
+                                <span class="mx-1 text-slate-600">VS</span> 
+                                <span id="badge-teamB-name" class="text-red-400">B Komandası</span>
+                            </div>
+                        </div>
 
-    state[team] = { formation: fKey, slots };
-    renderPitch(team);
+                        <!-- PITCH CANVAS -->
+                        <div id="pitch" class="football-pitch rounded-xl w-full select-none relative">
+                            <div class="pitch-line center-line"></div>
+                            <div class="pitch-line center-circle"></div>
+                            <div class="pitch-line center-spot"></div>
 
-    document.getElementById(`setup${team}`).style.display='none';
-    document.getElementById(`pitchPanel${team}`).style.display='block';
+                            <div class="pitch-line penalty-area-left"></div>
+                            <div class="pitch-line penalty-area-right"></div>
+                            <div class="pitch-line goal-box-left"></div>
+                            <div class="pitch-line goal-box-right"></div>
 
-    if(team==='A'){
-      document.getElementById('addBSection').style.display='block';
-    }
-    updateMatchView();
-  }
+                            <!-- Single team empty opponent side watermark overlay -->
+                            <div id="single-team-overlay" class="half-pitch-divider z-30">
+                                <div class="text-center p-4 rounded-xl bg-slate-950/80 border border-slate-700/50 backdrop-blur-sm max-w-xs transition-opacity duration-300">
+                                    <i class="fa-solid fa-user-plus text-slate-400 text-2xl mb-2"></i>
+                                    <p class="text-xs font-bold text-slate-200 mb-1">Rəqib Sxemi Yoxdur</p>
+                                    <button onclick="toggleTeamB()" class="mt-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all relative z-50">
+                                        + B Komandası Əlavə Et
+                                    </button>
+                                </div>
+                            </div>
 
-  function editSetup(team){
-    document.getElementById(`setup${team}`).style.display='block';
-    document.getElementById(`pitchPanel${team}`).style.display='none';
-  }
+                            <div id="players-layer" class="absolute inset-0 pointer-events-none"></div>
+                        </div>
 
-  // ---------- Render pitch tokens ----------
-  function renderPitch(team){
-    const layer = document.getElementById(`tokens${team}`);
-    layer.innerHTML='';
-    state[team].slots.forEach((p,i)=>{
-      const el = document.createElement('div');
-      el.className='player-token';
-      if(selected && selected.team===team && selected.slot===i) el.classList.add('selected');
-      el.style.left = p.x+'%';
-      el.style.top = p.y+'%';
-      el.draggable = true;
-      el.dataset.team = team;
-      el.dataset.slot = i;
-      el.innerHTML = `<div class="num-circle">${p.number ? escapeHtml(p.number) : (i===0?'K':'&nbsp;')}</div><div class="pname">${escapeHtml(p.name)}</div>`;
-      el.addEventListener('dragstart', dragStart);
-      el.addEventListener('dragover', e=>e.preventDefault());
-      el.addEventListener('drop', dropToken);
-      el.addEventListener('click', ()=>clickToken(team,i));
-      layer.appendChild(el);
-    });
-  }
+                        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 font-medium">
+                            <span><i class="fa-solid fa-check-double text-emerald-500 me-1"></i> Halı Saha 6v6 Sxem Qurucu</span>
+                            <span id="pitch-date-stamp"></span>
+                        </div>
+                    </div>
 
-  function dragStart(e){
-    const t = e.currentTarget;
-    e.dataTransfer.setData('text/plain', JSON.stringify({team:t.dataset.team, slot:t.dataset.slot}));
-  }
+                    <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 px-1">
+                        <div class="flex items-center gap-4">
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400"></span> Qapıçı (GK)</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Meydança Oyunçusu</span>
+                        </div>
+                        <div id="swap-status-msg" class="text-amber-400 font-semibold hidden animate-pulse">
+                            <i class="fa-solid fa-hand-pointer me-1"></i> Yerini dəyişmək üçün 2-ci oyunçunu seçin...
+                        </div>
+                    </div>
+                </div>
 
-  function dropToken(e){
-    e.preventDefault();
-    const target = e.currentTarget;
-    let data;
-    try{ data = JSON.parse(e.dataTransfer.getData('text/plain')); } catch(err){ return; }
-    if(!data || data.team !== target.dataset.team) return;
-    swapSlots(data.team, parseInt(data.slot), parseInt(target.dataset.slot));
-  }
+            </div>
+        </div>
+    </main>
 
-  function clickToken(team, slot){
-    if(selected && selected.team===team){
-      if(selected.slot===slot){
-        selected=null; renderPitch(team); return;
-      }
-      swapSlots(team, selected.slot, slot);
-      selected=null;
-      return;
-    }
-    selected = {team, slot};
-    renderPitch(team);
-  }
+    <script>
+        let isTeamBActive = false;
+        let selectedPlayerForSwap = null; 
 
-  function swapSlots(team, i, j){
-    if(i===j) return;
-    const arr = state[team].slots;
-    const tmpName = arr[i].name, tmpNum = arr[i].number;
-    arr[i].name = arr[j].name; arr[i].number = arr[j].number;
-    arr[j].name = tmpName; arr[j].number = tmpNum;
-    renderPitch(team);
-    updateMatchView();
-  }
+        // Formations adapted for Horizontal View (Percentage inside Left Half: 0-50%)
+        const FORMATIONS = {
+            "2-2-1": [
+                { x: 7,  y: 50 },   // GK
+                { x: 22, y: 28 },   // DEF
+                { x: 22, y: 72 },   // DEF
+                { x: 34, y: 32 },   // MID
+                { x: 34, y: 68 },   // MID
+                { x: 44, y: 50 }    // FWD
+            ],
+            "2-1-2": [
+                { x: 7,  y: 50 },
+                { x: 22, y: 28 },
+                { x: 22, y: 72 },
+                { x: 32, y: 50 },
+                { x: 44, y: 30 },
+                { x: 44, y: 70 }
+            ],
+            "3-1-1": [
+                { x: 7,  y: 50 },
+                { x: 22, y: 20 },
+                { x: 20, y: 50 },
+                { x: 22, y: 80 },
+                { x: 34, y: 50 },
+                { x: 44, y: 50 }
+            ]
+        };
 
-  // ---------- PNG export (single team) ----------
-  function downloadPNG(team){
-    const el = document.getElementById(`pitchWrap${team}`);
-    html2canvas(el, {backgroundColor:null, scale:2}).then(canvas=>{
-      const link = document.createElement('a');
-      link.download = `komanda_${team}_sxem.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
-  }
+        const state = {
+            A: {
+                name: "A Komandası",
+                color: "#059669",
+                formation: "2-2-1",
+                showNumbers: true,
+                players: [
+                    { name: "Elvin", number: "1", role: "Qapıçı (GK)" },
+                    { name: "Anar", number: "3", role: "Oyunçu" },
+                    { name: "Rəşad", number: "4", role: "Oyunçu" },
+                    { name: "Nicat", number: "8", role: "Oyunçu" },
+                    { name: "Kənan", number: "10", role: "Oyunçu" },
+                    { name: "Orxan", number: "9", role: "Oyunçu" }
+                ]
+            },
+            B: {
+                name: "B Komandası",
+                color: "#dc2626",
+                formation: "2-2-1",
+                showNumbers: true,
+                players: [
+                    { name: "Samir", number: "12", role: "Qapıçı (GK)" },
+                    { name: "Tural", number: "2", role: "Oyunçu" },
+                    { name: "Vüsal", number: "5", role: "Oyunçu" },
+                    { name: "Fərid", number: "6", role: "Oyunçu" },
+                    { name: "Murad", number: "7", role: "Oyunçu" },
+                    { name: "Emin", number: "11", role: "Oyunçu" }
+                ]
+            }
+        };
 
-  // ---------- Combined match view ----------
-  function updateMatchView(){
-    if(state.A && state.B){
-      document.getElementById('matchView').style.display='flex';
-      document.getElementById('matchActions').style.display='block';
-      const mA = document.getElementById('matchPitchA');
-      const mB = document.getElementById('matchPitchB');
-      const tokensLayerA = mA.querySelector('.tokens-layer');
-      const tokensLayerB = mB.querySelector('.tokens-layer');
-      if(tokensLayerA) tokensLayerA.remove();
-      if(tokensLayerB) tokensLayerB.remove();
-      const layerA = document.createElement('div');
-      layerA.className='tokens-layer';
-      layerA.innerHTML = document.getElementById('tokensA').innerHTML;
-      mA.appendChild(layerA);
-      const layerB = document.createElement('div');
-      layerB.className='tokens-layer';
-      layerB.innerHTML = document.getElementById('tokensB').innerHTML;
-      mB.appendChild(layerB);
-    } else {
-      document.getElementById('matchView').style.display='none';
-      document.getElementById('matchActions').style.display='none';
-    }
-  }
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('pitch-date-stamp').innerText = new Date().toLocaleDateString('az-AZ', { year: 'numeric', month: 'long', day: 'numeric' });
+            renderFormationCards('A');
+            renderFormationCards('B');
+            renderInputForms('A');
+            renderInputForms('B');
+            updatePitch();
+        });
 
-  function downloadCombined(){
-    const el = document.getElementById('matchViewWrap');
-    html2canvas(el, {backgroundColor:'#123c26', scale:2}).then(canvas=>{
-      const link = document.createElement('a');
-      link.download = 'her_iki_komanda_sxemi.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
-  }
+        function renderFormationCards(teamKey) {
+            const container = document.getElementById(`team${teamKey}-formations-container`);
+            container.innerHTML = '';
+            
+            Object.keys(FORMATIONS).forEach(key => {
+                const isActive = state[teamKey].formation === key;
+                const card = document.createElement('div');
+                card.className = `formation-card cursor-pointer rounded-lg p-2 flex flex-col items-center justify-center ${isActive ? 'active' : 'border-slate-700 bg-slate-800'}`;
+                card.onclick = () => selectFormation(teamKey, key);
+                
+                // Mini Pitch Layout
+                // Qapı (cərimə meydançası) sxemini arxa plana əlavə edirik
+                let dotsHtml = '<div style="position: absolute; top: 50%; left: 0; transform: translateY(-50%); width: 14%; height: 38%; border: 1.5px solid rgba(255,255,255,0.4); border-left: none;"></div>';
+                
+                FORMATIONS[key].forEach((pos, index) => {
+                    // Normalize position for mini-preview
+                    const px = (pos.x / 50) * 90; // scale up slightly for visual
+                    const isGK = index === 0;
+                    const gkStyles = isGK ? 'background-color: #f97316; z-index: 10;' : ''; // Qapıçı üçün narıncı rəng
+                    
+                    dotsHtml += `<div class="mini-dot" style="left: ${px}%; top: ${pos.y}%; ${gkStyles}"></div>`;
+                });
 
-  // ---------- Show team B ----------
-  function showTeamB(){
-    document.getElementById('teamB').style.display='block';
-    document.getElementById('addBSection').style.display='none';
-    document.getElementById('teamB').scrollIntoView({behavior:'smooth'});
-  }
+                card.innerHTML = `
+                    <span class="text-[10px] font-bold text-slate-300 mb-1.5">${key}</span>
+                    <div class="mini-preview shadow-inner">
+                        ${dotsHtml}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
 
-  // ---------- Init ----------
-  renderNameInputs('A');
-  renderFormationChoice('A');
-  renderNameInputs('B');
-  renderFormationChoice('B');
-</script>
+        function selectFormation(teamKey, formationKey) {
+            state[teamKey].formation = formationKey;
+            renderFormationCards(teamKey);
+            updatePitch();
+        }
 
+        function toggleNumbers(teamKey) {
+            const isChecked = document.getElementById(`numToggle${teamKey}`).checked;
+            state[teamKey].showNumbers = isChecked;
+            renderInputForms(teamKey);
+            updatePitch();
+        }
+
+        function renderInputForms(teamKey) {
+            const container = document.getElementById(`team${teamKey}-players-container`);
+            const team = state[teamKey];
+            container.innerHTML = '';
+
+            team.players.forEach((p, idx) => {
+                const row = document.createElement('div');
+                row.className = "flex items-center gap-2";
+                
+                let numInputHTML = team.showNumbers ? 
+                    `<input type="text" id="input-team${teamKey}-num-${idx}" value="${p.number}" oninput="syncInputsToData()" 
+                           placeholder="№" class="w-12 text-center bg-slate-800 border border-slate-700 rounded-lg px-1.5 py-1.5 text-xs font-bold focus:outline-none focus:border-white">` : '';
+
+                row.innerHTML = `
+                    <span class="w-6 text-center text-xs font-bold ${idx===0 ? 'text-amber-400' : 'text-slate-400'}">${idx+1}.</span>
+                    <input type="text" id="input-team${teamKey}-name-${idx}" value="${p.name}" oninput="syncInputsToData()" 
+                           placeholder="${p.role}" class="flex-grow bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-white">
+                    ${numInputHTML}
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function syncInputsToData() {
+            ['A', 'B'].forEach(teamKey => {
+                const t = state[teamKey];
+                const nameEl = document.getElementById(`team${teamKey}-name`);
+                const colorEl = document.getElementById(`team${teamKey}-color`);
+                
+                if(nameEl) t.name = nameEl.value;
+                if(colorEl) t.color = colorEl.value;
+
+                t.players.forEach((p, idx) => {
+                    const iName = document.getElementById(`input-team${teamKey}-name-${idx}`);
+                    const iNum = document.getElementById(`input-team${teamKey}-num-${idx}`);
+                    if (iName) p.name = iName.value;
+                    if (iNum && t.showNumbers) p.number = iNum.value;
+                });
+            });
+            updatePitch();
+        }
+
+        function toggleTeamB() {
+            isTeamBActive = !isTeamBActive;
+            const panelB = document.getElementById('teamB-panel');
+            const toggleText = document.getElementById('mode-toggle-text');
+            const overlay = document.getElementById('single-team-overlay');
+            const matchupBadge = document.getElementById('pitch-matchup-badge');
+
+            if (isTeamBActive) {
+                panelB.classList.remove('hidden');
+                toggleText.innerText = "Yalnız A Komandası (Tək)";
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                matchupBadge.classList.remove('hidden');
+            } else {
+                panelB.classList.add('hidden');
+                toggleText.innerText = "Rəqib (B) Əlavə Et";
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                matchupBadge.classList.add('hidden');
+            }
+            updatePitch();
+        }
+
+        function updatePitch() {
+            const pitchLayer = document.getElementById('players-layer');
+            pitchLayer.innerHTML = '';
+
+            const boardTitle = document.getElementById('pitch-board-title');
+            document.getElementById('badge-teamA-name').innerText = state.A.name;
+            document.getElementById('badge-teamB-name').innerText = state.B.name;
+
+            if (isTeamBActive) {
+                boardTitle.innerText = `${state.A.name} vs ${state.B.name}`;
+            } else {
+                boardTitle.innerText = `${state.A.name} Taktiki Kadrosu`;
+            }
+
+            renderTeamTokens('A', pitchLayer);
+            if (isTeamBActive) renderTeamTokens('B', pitchLayer);
+        }
+
+        function renderTeamTokens(teamKey, parentEl) {
+            const team = state[teamKey];
+            const formCoords = FORMATIONS[team.formation];
+
+            team.players.forEach((player, idx) => {
+                const pos = formCoords[idx];
+                let xPercent = pos.x;
+                let yPercent = pos.y;
+                if (teamKey === 'B') xPercent = 100 - pos.x; // Rəqib üçün güzgü əksi
+
+                const token = document.createElement('div');
+                token.className = `player-token group flex flex-col items-center justify-center`;
+                token.style.left = `${xPercent}%`;
+                token.style.top = `${yPercent}%`;
+                token.draggable = true;
+
+                const isGK = (idx === 0);
+                const tokenBgColor = isGK ? '#d97706' : team.color;
+
+                if (selectedPlayerForSwap && selectedPlayerForSwap.team === teamKey && selectedPlayerForSwap.index === idx) {
+                    token.classList.add('selected-for-swap');
+                }
+
+                const numberText = team.showNumbers ? (player.number || '') : (isGK ? 'K' : '');
+
+                token.innerHTML = `
+                    <div class="relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full text-white font-extrabold text-xs sm:text-sm border-2 border-white shadow-lg transition-transform group-hover:scale-110"
+                         style="background-color: ${tokenBgColor};">
+                        ${isGK ? '<i class="fa-solid fa-mitten absolute -top-1.5 text-[10px] text-amber-200"></i>' : ''}
+                        <span>${numberText}</span>
+                    </div>
+                    <div class="mt-1 px-2 py-0.5 bg-slate-950/90 text-slate-100 rounded-md border border-slate-700/80 text-[10px] sm:text-xs font-bold whitespace-nowrap shadow-md max-w-[80px] overflow-hidden text-ellipsis">
+                        ${player.name || '&nbsp;'}
+                    </div>
+                `;
+
+                // Drag & Drop
+                token.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({ team: teamKey, index: idx }));
+                    token.classList.add('dragging');
+                });
+                token.addEventListener('dragend', () => token.classList.remove('dragging'));
+                token.addEventListener('dragover', (e) => { e.preventDefault(); token.classList.add('drag-over'); });
+                token.addEventListener('dragleave', () => token.classList.remove('drag-over'));
+                token.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    token.classList.remove('drag-over');
+                    try {
+                        const sourceData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                        swapPlayers(sourceData, { team: teamKey, index: idx });
+                    } catch (err) {}
+                });
+
+                // Click to swap (Mobile fallback)
+                token.addEventListener('click', () => handlePlayerClick(teamKey, idx));
+
+                parentEl.appendChild(token);
+            });
+        }
+
+        function handlePlayerClick(teamKey, index) {
+            const msgEl = document.getElementById('swap-status-msg');
+            if (!selectedPlayerForSwap) {
+                selectedPlayerForSwap = { team: teamKey, index: index };
+                msgEl.classList.remove('hidden');
+            } else {
+                if (selectedPlayerForSwap.team === teamKey && selectedPlayerForSwap.index === index) {
+                    selectedPlayerForSwap = null;
+                } else {
+                    swapPlayers(selectedPlayerForSwap, { team: teamKey, index: index });
+                    selectedPlayerForSwap = null;
+                }
+                msgEl.classList.add('hidden');
+            }
+            updatePitch();
+        }
+
+        function swapPlayers(p1, p2) {
+            const arr1 = state[p1.team].players;
+            const arr2 = state[p2.team].players;
+            const temp = arr1[p1.index];
+            arr1[p1.index] = arr2[p2.index];
+            arr2[p2.index] = temp;
+            
+            renderInputForms(p1.team);
+            if(p1.team !== p2.team) renderInputForms(p2.team);
+            updatePitch();
+        }
+
+        function fillPresetData() {
+            const sampleA = [ {n: "Kənan", num: "1"}, {n: "Məmməd", num: "4"}, {n: "Teymur", num: "5"}, {n: "Rauf", num: "8"}, {n: "İlkin", num: "10"}, {n: "Cavid", num: "9"} ];
+            const sampleB = [ {n: "Rəşid", num: "12"}, {n: "Fuad", num: "3"}, {n: "Natiq", num: "2"}, {n: "Araz", num: "6"}, {n: "Eldar", num: "7"}, {n: "Ayxan", num: "11"} ];
+            
+            state.A.players.forEach((p, i) => { p.name = sampleA[i].n; p.number = sampleA[i].num; });
+            state.B.players.forEach((p, i) => { p.name = sampleB[i].n; p.number = sampleB[i].num; });
+            
+            renderInputForms('A');
+            renderInputForms('B');
+            updatePitch();
+        }
+
+        // ============================================================
+        // ŞƏKİL İXRACI — html2canvas ARTIQ İSTİFADƏ OLUNMUR.
+        // html2canvas DOM-u "foto çəkməklə" işləyir və mətn ölçülərini,
+        // fon rənglərini, faiz-əsaslı mövqeləri özü təxminən hesablayır;
+        // bu, xüsusi fontlarla (Plus Jakarta Sans) birlikdə ad etiketlərinin
+        // en ölçüsünü səhv alıb mətni qutunun içində sürüşdürməsinə səbəb
+        // olurdu. Bunun əvəzinə meydançanı və oyunçuları birbaşa Canvas 2D
+        // API ilə, `state` obyektindəki dəqiq mövqe/rəng/ad məlumatlarından
+        // əl ilə çəkirik — beləliklə nəticə hər zaman ekranda göründüyü ilə
+        // bir-birinə tam uyğun olur, heç bir "sürüşmə" ehtimalı qalmır.
+        // ============================================================
+
+        function roundRectPath(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.arcTo(x + w, y, x + w, y + r, r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+            ctx.lineTo(x + r, y + h);
+            ctx.arcTo(x, y + h, x, y + h - r, r);
+            ctx.lineTo(x, y + r);
+            ctx.arcTo(x, y, x + r, y, r);
+            ctx.closePath();
+        }
+
+        function drawNoOpponentOverlay(ctx, x, y, w, h) {
+            const halfX = x + w / 2;
+            ctx.fillStyle = 'rgba(0,0,0,0.25)';
+            ctx.fillRect(halfX, y, w / 2, h);
+
+            ctx.save();
+            ctx.setLineDash([7, 5]);
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(halfX, y);
+            ctx.lineTo(halfX, y + h);
+            ctx.stroke();
+            ctx.restore();
+
+            const cardW = Math.min(w * 0.36, 300);
+            const cardH = h * 0.34;
+            const cardX = halfX + (w / 2 - cardW) / 2;
+            const cardY = y + (h - cardH) / 2;
+
+            roundRectPath(ctx, cardX, cardY, cardW, cardH, 14);
+            ctx.fillStyle = 'rgba(2,6,23,0.88)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(51,65,85,0.6)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '22px sans-serif';
+            ctx.fillText('👤+', cardX + cardW / 2, cardY + cardH * 0.32);
+
+            ctx.font = '700 13px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText('Rəqib Sxemi Yoxdur', cardX + cardW / 2, cardY + cardH * 0.56);
+
+            const btnW = cardW - 40;
+            const btnH = 28;
+            const btnX = cardX + 20;
+            const btnY = cardY + cardH * 0.66;
+            roundRectPath(ctx, btnX, btnY, btnW, btnH, 7);
+            ctx.fillStyle = '#059669';
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('+ B Komandası Əlavə Et', btnX + btnW / 2, btnY + btnH / 2 + 1);
+        }
+
+        function drawPitch(ctx, x, y, w, h) {
+            ctx.save();
+            roundRectPath(ctx, x, y, w, h, 12);
+            ctx.clip();
+
+            const stripeCount = 10;
+            const stripeW = w / stripeCount;
+            for (let i = 0; i < stripeCount; i++) {
+                ctx.fillStyle = i % 2 === 0 ? '#1e5d28' : '#184e21';
+                ctx.fillRect(x + i * stripeW, y, stripeW + 1, h);
+            }
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(x + w / 2, y);
+            ctx.lineTo(x + w / 2, y + h);
+            ctx.stroke();
+
+            const circleR = h * 0.165;
+            ctx.beginPath();
+            ctx.arc(x + w / 2, y + h / 2, circleR, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.beginPath();
+            ctx.arc(x + w / 2, y + h / 2, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            const penTop = y + h * 0.20, penH = h * 0.60, penW = w * 0.18;
+            ctx.beginPath();
+            ctx.moveTo(x, penTop); ctx.lineTo(x + penW, penTop);
+            ctx.lineTo(x + penW, penTop + penH); ctx.lineTo(x, penTop + penH);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x + w, penTop); ctx.lineTo(x + w - penW, penTop);
+            ctx.lineTo(x + w - penW, penTop + penH); ctx.lineTo(x + w, penTop + penH);
+            ctx.stroke();
+
+            const gbTop = y + h * 0.35, gbH = h * 0.30, gbW = w * 0.08;
+            ctx.beginPath();
+            ctx.moveTo(x, gbTop); ctx.lineTo(x + gbW, gbTop);
+            ctx.lineTo(x + gbW, gbTop + gbH); ctx.lineTo(x, gbTop + gbH);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x + w, gbTop); ctx.lineTo(x + w - gbW, gbTop);
+            ctx.lineTo(x + w - gbW, gbTop + gbH); ctx.lineTo(x + w, gbTop + gbH);
+            ctx.stroke();
+
+            if (!isTeamBActive) drawNoOpponentOverlay(ctx, x, y, w, h);
+
+            ctx.restore();
+
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+            roundRectPath(ctx, x, y, w, h, 12);
+            ctx.stroke();
+        }
+
+        function drawTeamTokens(ctx, teamKey, px, py, pw, ph) {
+            const team = state[teamKey];
+            const formCoords = FORMATIONS[team.formation];
+            const diameter = pw * 0.062;
+            const radius = diameter / 2;
+
+            team.players.forEach((player, idx) => {
+                const pos = formCoords[idx];
+                let xPercent = pos.x;
+                if (teamKey === 'B') xPercent = 100 - pos.x;
+                const cx = px + (xPercent / 100) * pw;
+                const cy = py + (pos.y / 100) * ph;
+
+                const isGK = idx === 0;
+                const color = isGK ? '#d97706' : team.color;
+                const numberText = team.showNumbers ? (player.number || '') : (isGK ? 'K' : '');
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.lineWidth = Math.max(2, radius * 0.12);
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+
+                if (isGK) {
+                    ctx.font = `${Math.round(radius * 0.7)}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'alphabetic';
+                    ctx.fillText('🧤', cx, cy - radius - 3);
+                }
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `800 ${Math.round(radius * 0.82)}px "Plus Jakarta Sans", sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(numberText, cx, cy + 1);
+
+                const name = player.name || '';
+                const badgeFontSize = Math.max(11, Math.round(radius * 0.6));
+                ctx.font = `700 ${badgeFontSize}px "Plus Jakarta Sans", sans-serif`;
+                const maxBadgeW = diameter * 2.2;
+                const padX = 8;
+                let displayName = name;
+                if (displayName) {
+                    while (displayName.length > 1 && ctx.measureText(displayName + '…').width + padX * 2 > maxBadgeW) {
+                        displayName = displayName.slice(0, -1);
+                    }
+                    if (displayName !== name) displayName += '…';
+                }
+                const textW = ctx.measureText(displayName || ' ').width;
+                const badgeW = Math.max(textW + padX * 2, diameter * 0.55);
+                const badgeH = badgeFontSize + 10;
+                const badgeX = cx - badgeW / 2;
+                const badgeY = cy + radius + 6;
+
+                roundRectPath(ctx, badgeX, badgeY, badgeW, badgeH, 5);
+                ctx.fillStyle = 'rgba(2,6,23,0.92)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(51,65,85,0.85)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.fillStyle = '#f1f5f9';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(displayName, cx, badgeY + badgeH / 2 + 1);
+            });
+        }
+
+        function drawExportCanvas() {
+            const PAD = 26, HEADER_H = 56, FOOTER_H = 30, GAP = 16;
+            const PITCH_W = 1180;
+            const PITCH_H = Math.round(PITCH_W * 9 / 16);
+
+            const logicalW = PITCH_W + PAD * 2;
+            const logicalH = PAD * 2 + HEADER_H + GAP + PITCH_H + GAP + FOOTER_H;
+            const scale = 2;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = logicalW * scale;
+            canvas.height = logicalH * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(scale, scale);
+
+            roundRectPath(ctx, 0, 0, logicalW, logicalH, 16);
+            ctx.fillStyle = '#020617';
+            ctx.fill();
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Header
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'left';
+            ctx.font = '700 12px "Plus Jakarta Sans", sans-serif';
+            const pillLabel = '⚽ SXEM';
+            const pillPadX = 10;
+            const pillW = ctx.measureText(pillLabel).width + pillPadX * 2;
+            const pillH = 24;
+            const pillY = PAD + (HEADER_H - pillH) / 2 - 4;
+            roundRectPath(ctx, PAD, pillY, pillW, pillH, 6);
+            ctx.fillStyle = '#022c22';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(6,95,70,0.6)';
+            ctx.stroke();
+            ctx.fillStyle = '#34d399';
+            ctx.fillText(pillLabel, PAD + pillPadX, pillY + pillH / 2 + 1);
+
+            const title = isTeamBActive ? `${state.A.name} vs ${state.B.name}` : `${state.A.name} Taktiki Kadrosu`;
+            ctx.font = '700 15px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText(title, PAD + pillW + 12, pillY + pillH / 2 + 1);
+
+            if (isTeamBActive) {
+                ctx.font = '700 12px "Plus Jakarta Sans", sans-serif';
+                const wA = ctx.measureText(state.A.name).width;
+                const wVS = ctx.measureText(' VS ').width;
+                const wB = ctx.measureText(state.B.name).width;
+                let rx = PAD + PITCH_W - (wA + wVS + wB);
+                const ry = pillY + pillH / 2 + 1;
+                ctx.fillStyle = '#34d399';
+                ctx.fillText(state.A.name, rx, ry); rx += wA;
+                ctx.fillStyle = '#475569';
+                ctx.fillText(' VS ', rx, ry); rx += wVS;
+                ctx.fillStyle = '#f87171';
+                ctx.fillText(state.B.name, rx, ry);
+            }
+
+            const dividerY = PAD + HEADER_H - 6;
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(PAD, dividerY);
+            ctx.lineTo(PAD + PITCH_W, dividerY);
+            ctx.stroke();
+
+            // Pitch + players
+            const pitchX = PAD, pitchY = PAD + HEADER_H + GAP;
+            drawPitch(ctx, pitchX, pitchY, PITCH_W, PITCH_H);
+            drawTeamTokens(ctx, 'A', pitchX, pitchY, PITCH_W, PITCH_H);
+            if (isTeamBActive) drawTeamTokens(ctx, 'B', pitchX, pitchY, PITCH_W, PITCH_H);
+
+            // Footer
+            const footerY = pitchY + PITCH_H + GAP + FOOTER_H / 2;
+            ctx.textAlign = 'left';
+            ctx.font = '600 11px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('✓ Halı Saha 6v6 Sxem Qurucu', PAD, footerY);
+
+            const dateText = new Date().toLocaleDateString('az-AZ', { year: 'numeric', month: 'long', day: 'numeric' });
+            ctx.textAlign = 'right';
+            ctx.fillText(dateText, PAD + PITCH_W, footerY);
+
+            return canvas;
+        }
+
+        function exportAsImage() {
+            const exportBtn = event.currentTarget;
+            const originalText = exportBtn.innerHTML;
+            exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Hazırlanır...</span>`;
+            exportBtn.disabled = true;
+
+            document.fonts.ready.then(() => {
+                try {
+                    const canvas = drawExportCanvas();
+                    const link = document.createElement('a');
+                    link.download = isTeamBActive ? `${state.A.name}_vs_${state.B.name}.png` : `${state.A.name}_sxem.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                } catch (err) {
+                    console.error('Şəkil ixracı zamanı xəta:', err);
+                    alert('Şəkli yaratmaq mümkün olmadı. Zəhmət olmasa yenidən cəhd edin.');
+                } finally {
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
