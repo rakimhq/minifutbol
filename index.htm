@@ -92,7 +92,7 @@
         /* Player token style */
         .player-token {
             position: absolute;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) rotate(var(--extra-rotate, 0deg));
             cursor: grab;
             transition: transform 0.15s ease, box-shadow 0.2s ease;
             z-index: 20;
@@ -102,18 +102,50 @@
 
         .player-token:active {
             cursor: grabbing;
-            transform: translate(-50%, -50%) scale(1.15);
+            transform: translate(-50%, -50%) scale(1.15) rotate(var(--extra-rotate, 0deg));
             z-index: 50;
         }
 
         .player-token.dragging {
             opacity: 0.8;
-            transform: translate(-50%, -50%) scale(1.2);
+            transform: translate(-50%, -50%) scale(1.2) rotate(var(--extra-rotate, 0deg));
             z-index: 100;
         }
 
         .player-token.drag-over {
-            transform: translate(-50%, -50%) scale(1.25) !important;
+            transform: translate(-50%, -50%) scale(1.25) rotate(var(--extra-rotate, 0deg)) !important;
+        }
+
+        /* Portrait orientation mode: rotates the whole pitch 90° so it reads
+           top-to-bottom on mobile, while player labels/text stay upright
+           via a counter-rotation on their content. This is a display-only
+           change — the export (Save as image) always renders left-to-right. */
+        #pitch-wrapper.portrait-mode {
+            --extra-rotate: -90deg;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            aspect-ratio: 9 / 16;
+            overflow: hidden;
+        }
+
+        #pitch-wrapper.portrait-mode #pitch {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 177.7778%;
+            aspect-ratio: 16 / 9;
+            transform: translate(-50%, -50%) rotate(90deg);
+        }
+
+        #pitch-wrapper.portrait-mode #single-team-overlay > div {
+            transform: rotate(var(--extra-rotate, 0deg));
+        }
+
+        .orientation-btn.active {
+            background-color: #059669 !important;
+            color: #fff !important;
+            border-color: #10b981 !important;
         }
 
         .player-token.selected-for-swap {
@@ -308,28 +340,33 @@
                         </div>
 
                         <!-- PITCH CANVAS -->
-                        <div id="pitch" class="football-pitch rounded-xl w-full select-none relative">
-                            <div class="pitch-line center-line"></div>
-                            <div class="pitch-line center-circle"></div>
-                            <div class="pitch-line center-spot"></div>
+                        <div id="pitch-wrapper" class="relative w-full">
+                            <button id="orientation-toggle-btn" onclick="togglePitchOrientation()" title="Portret görünüşünə keç (mobil üçün)" class="orientation-btn absolute top-2 right-2 z-40 w-8 h-8 flex items-center justify-center rounded-lg bg-slate-950/80 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-slate-700/80 hover:border-emerald-500 backdrop-blur-sm transition-all shadow-lg">
+                                <i id="orientation-toggle-icon" class="fa-solid fa-mobile-screen text-sm"></i>
+                            </button>
+                            <div id="pitch" class="football-pitch rounded-xl w-full select-none relative">
+                                <div class="pitch-line center-line"></div>
+                                <div class="pitch-line center-circle"></div>
+                                <div class="pitch-line center-spot"></div>
 
-                            <div class="pitch-line penalty-area-left"></div>
-                            <div class="pitch-line penalty-area-right"></div>
-                            <div class="pitch-line goal-box-left"></div>
-                            <div class="pitch-line goal-box-right"></div>
+                                <div class="pitch-line penalty-area-left"></div>
+                                <div class="pitch-line penalty-area-right"></div>
+                                <div class="pitch-line goal-box-left"></div>
+                                <div class="pitch-line goal-box-right"></div>
 
-                            <!-- Single team empty opponent side watermark overlay -->
-                            <div id="single-team-overlay" class="half-pitch-divider z-30">
-                                <div class="text-center p-4 rounded-xl bg-slate-950/80 border border-slate-700/50 backdrop-blur-sm max-w-xs transition-opacity duration-300">
-                                    <i class="fa-solid fa-user-plus text-slate-400 text-2xl mb-2"></i>
-                                    <p class="text-xs font-bold text-slate-200 mb-1">Rəqib Sxemi Yoxdur</p>
-                                    <button onclick="toggleTeamB()" class="mt-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all relative z-50">
-                                        + B Komandası Əlavə Et
-                                    </button>
+                                <!-- Single team empty opponent side watermark overlay -->
+                                <div id="single-team-overlay" class="half-pitch-divider z-30">
+                                    <div class="text-center p-4 rounded-xl bg-slate-950/80 border border-slate-700/50 backdrop-blur-sm max-w-xs transition-opacity duration-300">
+                                        <i class="fa-solid fa-user-plus text-slate-400 text-2xl mb-2"></i>
+                                        <p class="text-xs font-bold text-slate-200 mb-1">Rəqib Sxemi Yoxdur</p>
+                                        <button onclick="toggleTeamB()" class="mt-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all relative z-50">
+                                            + B Komandası Əlavə Et
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div id="players-layer" class="absolute inset-0 pointer-events-none"></div>
+                                <div id="players-layer" class="absolute inset-0 pointer-events-none"></div>
+                            </div>
                         </div>
 
                         <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 font-medium">
@@ -532,6 +569,22 @@
                 matchupBadge.classList.add('hidden');
             }
             updatePitch();
+        }
+
+        let isPortraitMode = false;
+
+        function togglePitchOrientation() {
+            isPortraitMode = !isPortraitMode;
+            const wrapper = document.getElementById('pitch-wrapper');
+            const btn = document.getElementById('orientation-toggle-btn');
+            const icon = document.getElementById('orientation-toggle-icon');
+
+            wrapper.classList.toggle('portrait-mode', isPortraitMode);
+            btn.classList.toggle('active', isPortraitMode);
+            icon.style.transform = isPortraitMode ? 'rotate(90deg)' : 'rotate(0deg)';
+            btn.title = isPortraitMode
+                ? 'Albom (üfüqi) görünüşünə qaytar'
+                : 'Portret görünüşünə keç (mobil üçün)';
         }
 
         function updatePitch() {
