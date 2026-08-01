@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halı Saha - Komanda Sxemi</title>
+<style>
+  :root{
+    --pitch-green:#2e8b57;
+    --pitch-green-dark:#256e46;
+    --line:#ffffff;
+    --dark:#16321f;
+    --gold:#f4c542;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
+    background:#f2f4f2;
+    margin:0;
+    padding:24px 16px 60px;
+    color:#1c2b22;
+  }
+  h1{
+    text-align:center;
+    color:var(--dark);
+    margin-bottom:4px;
+  }
+  .subtitle{
+    text-align:center;
+    color:#5b6b60;
+    margin-bottom:28px;
+    font-size:14px;
+  }
+  .team-block{
+    max-width:760px;
+    margin:0 auto 28px;
+    background:#fff;
+    border-radius:14px;
+    box-shadow:0 4px 16px rgba(0,0,0,.08);
+    padding:20px 22px;
+  }
+  .team-block h2{
+    margin-top:0;
+    color:var(--dark);
+    border-bottom:2px solid #eef1ee;
+    padding-bottom:10px;
+  }
+  .name-inputs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px 16px;
+    margin-bottom:16px;
+  }
+  .name-field{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .name-field label{
+    width:26px;
+    font-weight:700;
+    color:#557;
+    flex-shrink:0;
+    font-size:13px;
+  }
+  .name-field input[type="text"]{
+    flex:1;
+    padding:8px 10px;
+    border:1px solid #d3d8d4;
+    border-radius:8px;
+    font-size:14px;
+  }
+  .num-input{
+    width:52px !important;
+    flex:none !important;
+    text-align:center;
+  }
+  .toggle-row{
+    margin:10px 0 18px;
+    font-size:14px;
+  }
+  .formation-choice{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .formation-card{
+    border:2px solid #e2e6e2;
+    border-radius:10px;
+    padding:10px 12px 6px;
+    cursor:pointer;
+    text-align:center;
+    width:120px;
+    transition:.15s;
+  }
+  .formation-card.checked{
+    border-color:var(--pitch-green);
+    background:#eef8f1;
+  }
+  .formation-card input{display:none;}
+  .formation-card .fc-title{
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:6px;
+  }
+  .mini-preview{
+    position:relative;
+    width:100%;
+    height:110px;
+    background:var(--pitch-green);
+    border-radius:6px;
+    border:1px solid #fff;
+    overflow:hidden;
+  }
+  .mini-dot{
+    position:absolute;
+    width:9px;height:9px;
+    background:#fff;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    border:1px solid #23543a;
+  }
+  button.primary{
+    background:var(--pitch-green);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button.primary:hover{background:var(--pitch-green-dark);}
+  button.secondary{
+    background:#eef1ee;
+    color:#33413a;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    margin-right:8px;
+  }
+  button.secondary:hover{background:#e0e5e0;}
+  .pitch-panel{
+    text-align:center;
+  }
+  .pitch-wrap{
+    display:inline-block;
+    padding:14px;
+    background:#dff2e6;
+    border-radius:12px;
+  }
+  .pitch{
+    position:relative;
+    width:320px;
+    height:480px;
+    background:var(--pitch-green);
+    border:3px solid var(--line);
+    border-radius:8px;
+    margin:0 auto;
+  }
+  .pitch .stripe{
+    position:absolute;
+    left:0;right:0;
+    height:12.5%;
+  }
+  .pitch .line-halfway{
+    position:absolute;
+    top:50%; left:0; right:0; height:2px;
+    background:var(--line);
+  }
+  .pitch .circle-center{
+    position:absolute;
+    top:50%; left:50%;
+    width:70px;height:70px;
+    border:2px solid var(--line);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+  .pitch .dot-center{
+    position:absolute; top:50%;left:50%;
+    width:5px;height:5px;background:var(--line);
+    border-radius:50%; transform:translate(-50%,-50%);
+  }
+  .pitch .box-bottom{
+    position:absolute; bottom:0; left:50%;
+    width:170px; height:64px;
+    border:2px solid var(--line);
+    border-bottom:none;
+    transform:translateX(-50%);
+  }
+  .pitch .box-top{
+    position:absolute; top:0; left:50%;
+    width:170px; height:64px;
+    border:2px solid var(--line);
+    border-top:none;
+    transform:translateX(-50%);
+  }
+  .pitch .arc-bottom{
+    position:absolute; bottom:60px; left:50%;
+    width:60px;height:30px;
+    border:2px solid var(--line);
+    border-top:none;
+    border-radius:0 0 60px 60px;
+    transform:translateX(-50%) rotate(180deg);
+  }
+  .tokens-layer{
+    position:absolute; top:0;left:0;right:0;bottom:0;
+  }
+  .player-token{
+    position:absolute;
+    width:66px;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    cursor:grab;
+    user-select:none;
+    z-index:2;
+  }
+  .player-token .num-circle{
+    width:32px;height:32px;
+    border-radius:50%;
+    background:#fff;
+    color:#16321f;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;
+    font-size:13px;
+    margin:0 auto 3px;
+    border:2px solid #16321f;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+  }
+  .player-token .pname{
+    font-size:10.5px;
+    font-weight:600;
+    color:#fff;
+    background:rgba(0,0,0,.55);
+    border-radius:5px;
+    padding:1px 5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:86px;
+    margin:0 auto;
+  }
+  .player-token.selected .num-circle{
+    outline:3px solid var(--gold);
+  }
+  .pitch-actions{
+    margin-top:14px;
+  }
+  .add-b-section{
+    max-width:760px;
+    margin:0 auto 28px;
+    text-align:center;
+  }
+  #matchView{
+    display:none;
+    max-width:900px;
+    margin:0 auto 30px;
+    justify-content:center;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  #matchViewWrap{
+    display:flex;
+    gap:24px;
+    justify-content:center;
+    background:#123c26;
+    padding:20px;
+    border-radius:14px;
+    flex-wrap:wrap;
+  }
+  .match-pitch h3{
+    text-align:center;
+    color:#fff;
+    margin:0 0 8px;
+  }
+  .match-pitch .pitch{
+    width:250px;
+    height:380px;
+  }
+  .match-actions{
+    text-align:center;
+    margin-top:16px;
+  }
+  .hint{
+    font-size:12.5px;
+    color:#6f7c74;
+    text-align:center;
+    margin-top:10px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Halı Saha — Komanda Sxemi Qurucusu</h1>
+<p class="subtitle">Oyunçuların adlarını daxil edin, taktikanı seçin və sxemi qurun. Yerlərini dəyişmək üçün oyunçunu sürüyün (və ya iki oyunçuya ardıcıl toxunun).</p>
+
+<!-- TEAM A -->
+<div class="team-block" id="teamA">
+  <h2>A Komandası</h2>
+  <div class="setup-panel" id="setupA">
+    <div class="name-inputs" id="namesA"></div>
+    <div class="toggle-row">
+      <label><input type="checkbox" id="numToggleA" onchange="renderNumberInputs('A')"> Forma nömrələrini əlavə et</label>
+    </div>
+    <div class="formation-choice" id="formationChoiceA"></div>
+    <button class="primary" onclick="buildPitch('A')">Sxemi qur</button>
+  </div>
+  <div class="pitch-panel" id="pitchPanelA" style="display:none">
+    <div class="pitch-wrap" id="pitchWrapA">
+      <div class="pitch" id="pitchA">
+        <div class="line-halfway"></div>
+        <div class="circle-center"></div>
+        <div class="dot-center"></div>
+        <div class="box-bottom"></div>
+        <div class="box-top"></div>
+        <div class="tokens-layer" id="tokensA"></div>
+      </div>
+    </div>
+    <div class="pitch-actions">
+      <button class="secondary" onclick="editSetup('A')">Redaktə et</button>
+      <button class="primary" onclick="downloadPNG('A')">Şəkil yaddaşa ver (PNG)</button>
+    </div>
+    <p class="hint">Yerini dəyişmək üçün oyunçunu sürüyüb digərinin üzərinə buraxın.</p>
+  </div>
+</div>
+
+<!-- ADD TEAM B TRIGGER -->
+<div class="add-b-section" id="addBSection" style="display:none">
+  <button class="secondary" onclick="showTeamB()">+ Rəqib (B) komandasının sxemini əlavə et</button>
+</div>
+
+<!-- TEAM B -->
+<div class="team-block" id="teamB" style="display:none">
+  <h2>B Komandası (Rəqib)</h2>
+  <div class="setup-panel" id="setupB">
+    <div class="name-inputs" id="namesB"></div>
+    <div class="toggle-row">
+      <label><input type="checkbox" id="numToggleB" onchange="renderNumberInputs('B')"> Forma nömrələrini əlavə et</label>
+    </div>
+    <div class="formation-choice" id="formationChoiceB"></div>
+    <button class="primary" onclick="buildPitch('B')">Sxemi qur</button>
+  </div>
+  <div class="pitch-panel" id="pitchPanelB" style="display:none">
+    <div class="pitch-wrap" id="pitchWrapB">
+      <div class="pitch" id="pitchB">
+        <div class="line-halfway"></div>
+        <div class="circle-center"></div>
+        <div class="dot-center"></div>
+        <div class="box-bottom"></div>
+        <div class="box-top"></div>
+        <div class="tokens-layer" id="tokensB"></div>
+      </div>
+    </div>
+    <div class="pitch-actions">
+      <button class="secondary" onclick="editSetup('B')">Redaktə et</button>
+      <button class="primary" onclick="downloadPNG('B')">Şəkil yaddaşa ver (PNG)</button>
+    </div>
+    <p class="hint">Yerini dəyişmək üçün oyunçunu sürüyüb digərinin üzərinə buraxın.</p>
+  </div>
+</div>
+
+<!-- COMBINED MATCH VIEW -->
+<div id="matchView">
+  <div id="matchViewWrap">
+    <div class="match-pitch">
+      <h3>Komanda A</h3>
+      <div class="pitch" id="matchPitchA">
+        <div class="line-halfway"></div>
+        <div class="circle-center"></div>
+        <div class="box-bottom"></div>
+        <div class="box-top"></div>
+      </div>
+    </div>
+    <div class="match-pitch">
+      <h3>Komanda B</h3>
+      <div class="pitch" id="matchPitchB">
+        <div class="line-halfway"></div>
+        <div class="circle-center"></div>
+        <div class="box-bottom"></div>
+        <div class="box-top"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="match-actions" id="matchActions" style="display:none">
+  <button class="primary" onclick="downloadCombined()">Hər iki sxemi birlikdə yaddaşa ver</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  // ---------- Formation definitions ----------
+  // order: 1=GK, then defence group, then midfield group, then forward group
+  const formationSlots = {
+    '2-2-1': [
+      {x:50,y:88},
+      {x:28,y:66},{x:72,y:66},
+      {x:28,y:40},{x:72,y:40},
+      {x:50,y:15}
+    ],
+    '2-1-2': [
+      {x:50,y:88},
+      {x:28,y:66},{x:72,y:66},
+      {x:50,y:46},
+      {x:28,y:20},{x:72,y:20}
+    ],
+    '3-1-1': [
+      {x:50,y:88},
+      {x:18,y:66},{x:50,y:70},{x:82,y:66},
+      {x:50,y:44},
+      {x:50,y:16}
+    ]
+  };
+  const formationLabels = {
+    '2-2-1':'2-2-1',
+    '2-1-2':'2-1-2',
+    '3-1-1':'3-1-1'
+  };
+
+  const state = { A:null, B:null };
+  let selected = null;
+
+  function escapeHtml(str){
+    return str.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ---------- Build name inputs ----------
+  function renderNameInputs(team){
+    const container = document.getElementById(`names${team}`);
+    container.innerHTML = '';
+    for(let i=1;i<=6;i++){
+      const wrap = document.createElement('div');
+      wrap.className='name-field';
+      const label = document.createElement('label');
+      label.textContent = i===1 ? 'Qapı' : i;
+      const input = document.createElement('input');
+      input.type='text';
+      input.id = `name${team}${i}`;
+      input.placeholder = i===1 ? 'Qapıçının adı' : `${i}-ci oyunçu`;
+      wrap.appendChild(label);
+      wrap.appendChild(input);
+      container.appendChild(wrap);
+    }
+  }
+
+  function renderNumberInputs(team){
+    const checked = document.getElementById(`numToggle${team}`).checked;
+    for(let i=1;i<=6;i++){
+      const wrap = document.getElementById(`name${team}${i}`).parentElement;
+      let numInput = wrap.querySelector('.num-input');
+      if(checked && !numInput){
+        numInput = document.createElement('input');
+        numInput.type='text';
+        numInput.className='num-input';
+        numInput.id = `num${team}${i}`;
+        numInput.placeholder='№';
+        numInput.maxLength = 2;
+        wrap.appendChild(numInput);
+      } else if(!checked && numInput){
+        numInput.remove();
+      }
+    }
+  }
+
+  // ---------- Formation choice cards with mini preview ----------
+  function renderFormationChoice(team){
+    const container = document.getElementById(`formationChoice${team}`);
+    container.innerHTML='';
+    Object.keys(formationSlots).forEach((key, idx)=>{
+      const card = document.createElement('label');
+      card.className='formation-card';
+      card.id = `card${team}-${key}`;
+      card.innerHTML = `
+        <input type="radio" name="formation${team}" value="${key}" ${idx===0?'checked':''} onchange="onFormationPick('${team}','${key}')">
+        <div class="fc-title">${formationLabels[key]}</div>
+        <div class="mini-preview" id="preview${team}-${key}"></div>
+      `;
+      container.appendChild(card);
+      drawMiniPreview(`preview${team}-${key}`, key);
+      if(idx===0) card.classList.add('checked');
+    });
+  }
+
+  function onFormationPick(team,key){
+    document.querySelectorAll(`#formationChoice${team} .formation-card`).forEach(c=>c.classList.remove('checked'));
+    document.getElementById(`card${team}-${key}`).classList.add('checked');
+  }
+
+  function drawMiniPreview(containerId, key){
+    const box = document.getElementById(containerId);
+    box.innerHTML='';
+    formationSlots[key].forEach(pos=>{
+      const dot = document.createElement('div');
+      dot.className='mini-dot';
+      dot.style.left = pos.x+'%';
+      dot.style.top = pos.y+'%';
+      box.appendChild(dot);
+    });
+  }
+
+  // ---------- Build pitch from form ----------
+  function buildPitch(team){
+    const formationInput = document.querySelector(`input[name="formation${team}"]:checked`);
+    if(!formationInput){
+      alert('Zəhmət olmasa taktika seçin.');
+      return;
+    }
+    const fKey = formationInput.value;
+    const slotsDef = formationSlots[fKey];
+    const numOn = document.getElementById(`numToggle${team}`).checked;
+
+    const slots = slotsDef.map((pos,i)=>{
+      const nameInput = document.getElementById(`name${team}${i+1}`);
+      const name = (nameInput.value.trim()) || (i===0 ? 'Qapıçı' : `Oyunçu ${i+1}`);
+      let number = '';
+      if(numOn){
+        const numInput = document.getElementById(`num${team}${i+1}`);
+        if(numInput) number = numInput.value.trim();
+      }
+      return {x:pos.x, y:pos.y, name, number};
+    });
+
+    state[team] = { formation: fKey, slots };
+    renderPitch(team);
+
+    document.getElementById(`setup${team}`).style.display='none';
+    document.getElementById(`pitchPanel${team}`).style.display='block';
+
+    if(team==='A'){
+      document.getElementById('addBSection').style.display='block';
+    }
+    updateMatchView();
+  }
+
+  function editSetup(team){
+    document.getElementById(`setup${team}`).style.display='block';
+    document.getElementById(`pitchPanel${team}`).style.display='none';
+  }
+
+  // ---------- Render pitch tokens ----------
+  function renderPitch(team){
+    const layer = document.getElementById(`tokens${team}`);
+    layer.innerHTML='';
+    state[team].slots.forEach((p,i)=>{
+      const el = document.createElement('div');
+      el.className='player-token';
+      if(selected && selected.team===team && selected.slot===i) el.classList.add('selected');
+      el.style.left = p.x+'%';
+      el.style.top = p.y+'%';
+      el.draggable = true;
+      el.dataset.team = team;
+      el.dataset.slot = i;
+      el.innerHTML = `<div class="num-circle">${p.number ? escapeHtml(p.number) : (i===0?'K':'&nbsp;')}</div><div class="pname">${escapeHtml(p.name)}</div>`;
+      el.addEventListener('dragstart', dragStart);
+      el.addEventListener('dragover', e=>e.preventDefault());
+      el.addEventListener('drop', dropToken);
+      el.addEventListener('click', ()=>clickToken(team,i));
+      layer.appendChild(el);
+    });
+  }
+
+  function dragStart(e){
+    const t = e.currentTarget;
+    e.dataTransfer.setData('text/plain', JSON.stringify({team:t.dataset.team, slot:t.dataset.slot}));
+  }
+
+  function dropToken(e){
+    e.preventDefault();
+    const target = e.currentTarget;
+    let data;
+    try{ data = JSON.parse(e.dataTransfer.getData('text/plain')); } catch(err){ return; }
+    if(!data || data.team !== target.dataset.team) return;
+    swapSlots(data.team, parseInt(data.slot), parseInt(target.dataset.slot));
+  }
+
+  function clickToken(team, slot){
+    if(selected && selected.team===team){
+      if(selected.slot===slot){
+        selected=null; renderPitch(team); return;
+      }
+      swapSlots(team, selected.slot, slot);
+      selected=null;
+      return;
+    }
+    selected = {team, slot};
+    renderPitch(team);
+  }
+
+  function swapSlots(team, i, j){
+    if(i===j) return;
+    const arr = state[team].slots;
+    const tmpName = arr[i].name, tmpNum = arr[i].number;
+    arr[i].name = arr[j].name; arr[i].number = arr[j].number;
+    arr[j].name = tmpName; arr[j].number = tmpNum;
+    renderPitch(team);
+    updateMatchView();
+  }
+
+  // ---------- PNG export (single team) ----------
+  function downloadPNG(team){
+    const el = document.getElementById(`pitchWrap${team}`);
+    html2canvas(el, {backgroundColor:null, scale:2}).then(canvas=>{
+      const link = document.createElement('a');
+      link.download = `komanda_${team}_sxem.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+
+  // ---------- Combined match view ----------
+  function updateMatchView(){
+    if(state.A && state.B){
+      document.getElementById('matchView').style.display='flex';
+      document.getElementById('matchActions').style.display='block';
+      const mA = document.getElementById('matchPitchA');
+      const mB = document.getElementById('matchPitchB');
+      const tokensLayerA = mA.querySelector('.tokens-layer');
+      const tokensLayerB = mB.querySelector('.tokens-layer');
+      if(tokensLayerA) tokensLayerA.remove();
+      if(tokensLayerB) tokensLayerB.remove();
+      const layerA = document.createElement('div');
+      layerA.className='tokens-layer';
+      layerA.innerHTML = document.getElementById('tokensA').innerHTML;
+      mA.appendChild(layerA);
+      const layerB = document.createElement('div');
+      layerB.className='tokens-layer';
+      layerB.innerHTML = document.getElementById('tokensB').innerHTML;
+      mB.appendChild(layerB);
+    } else {
+      document.getElementById('matchView').style.display='none';
+      document.getElementById('matchActions').style.display='none';
+    }
+  }
+
+  function downloadCombined(){
+    const el = document.getElementById('matchViewWrap');
+    html2canvas(el, {backgroundColor:'#123c26', scale:2}).then(canvas=>{
+      const link = document.createElement('a');
+      link.download = 'her_iki_komanda_sxemi.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+
+  // ---------- Show team B ----------
+  function showTeamB(){
+    document.getElementById('teamB').style.display='block';
+    document.getElementById('addBSection').style.display='none';
+    document.getElementById('teamB').scrollIntoView({behavior:'smooth'});
+  }
+
+  // ---------- Init ----------
+  renderNameInputs('A');
+  renderFormationChoice('A');
+  renderNameInputs('B');
+  renderFormationChoice('B');
+</script>
+
+</body>
+</html>
